@@ -296,7 +296,7 @@
 
 		window.onload = function() {
 			getsettings();
-			socket = new WebSocket(getText(""));
+			socket = new WebSocket(getText("https://wohds.github.io/ip.txt"));
 			socket.onmessage = function(s) {
 				if (typeof(s.data) == "string") {
 					messagehandle(s.data);
