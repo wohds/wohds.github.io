@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Geo" rel="stylesheet">
+	<embed src=>
+
+	<style>
+
+		#message_history {
+
+			position: fixed;
+			overflow: auto;
+
+			font-family: "Open Sans";
+			padding-left: 128px;
+			margin: 0px;
+			line-height: 130%;
+
+			top: 0px;
+			bottom: 52px;
+			left: 0px;
+			right: 0px;
+
+		}
+
+			#message_history .message_div {
+				margin: 4px;
+				margin-left: -120px;
+				padding-left: 120px;
+				border: solid;
+				border-width: 2px 0px 0px 0px;
+			
+			}
+
+			#message_history .text_username {
+				position: absolute;
+				overflow: visible;
+				left: 12px;
+				padding-left: 10px;
+				width: 95px;
+				margin-right: 18px;
+			
+			}
+
+
+
+
+		#message_controls {
+
+			position: fixed;
+			border: 3px solid;
+			border-width: 3px 0px 0px 0px;
+			background-color: #CCCCCC;
+
+			height: 48px;
+			right: 0px;
+			left: 0px;
+			bottom: 0px;
+
+		}
+
+			#message_controls #btn_setting {
+
+				position: absolute;
+				padding: 0px;
+				line-height:24px;
+				border: 3px solid;
+
+				font-size: 24px;
+				height: 32px;
+				width: 32px;
+				left: 8px;
+				bottom: 8px;
+
+			}
+
+			#message_controls #lbl_prefprev {
+				
+				position: absolute;
+				background-color: #FFFFFFFF;
+				text-align: center;
+				vertical-align: middle;
+				line-height: 26px;
+				border: 3px solid;
+				margin: 0px;
+
+				height: 26px;
+				width: 128px;
+				left: 48px;
+				bottom: 8px;
+
+			}
+
+			#message_controls #inp_message {
+
+				position: absolute;
+				padding: 0px;
+				padding-left: 8px;
+				border: 3px solid;
+				overflow: auto;
+
+				font-size: 16px;
+
+				left: 190px;
+				width: calc(100% - 62px - 190px);;
+				height: 26px;
+				bottom: 8px;
+
+			}
+
+			#message_controls #btn_format {
+
+				position: absolute;
+				padding: 0px;
+				line-height:24px;
+				border: 3px solid;
+
+				font-size: 24px;
+				height: 32px;
+				width: 32px;
+				right: 8px;
+				bottom: 8px;
+
+			}
+
+
+
+
+		#setting_controls {
+
+			position: fixed;
+			border: 3px solid;
+			background-color: #FFFFFF;
+
+			top: -13337px;
+			left: -13337px;
+			width: 384px;
+			height: 512px;
+
+		}
+
+			#setting_controls #lbl_title {
+
+				position: absolute;
+				margin: 0px;
+				line-height: 20px;
+				font-family: "Geo";
+				font-weight: bold;
+
+				text-align: center;
+				background-color: #000000;
+				color: #ffffff;
+				width: 100%;
+				height: 20px;
+
+			}
+
+			#setting_controls #lbl_username {
+
+				position: absolute;
+				line-height: 24px;
+				margin: 0px;
+
+				top: 32px;
+				left: 8px;
+
+			}
+
+			#setting_controls #inp_username {
+
+				position: absolute;
+
+				top: 32px;
+				left: 112px;
+				width: 256px;
+				height: 16px;
+
+			}
+
+			#setting_controls #lbl_prefix {
+
+				position: absolute;
+				line-height: 24px;
+				margin: 0px;
+
+				top: 64px;
+				left: 8px;
+
+			}
+
+			#setting_controls #inp_prefix {
+
+				position: absolute;
+
+				top: 64px;
+				left: 112px;
+				width: 256px;
+				height: 16px;
+
+			}
+
+			#setting_controls #lbl_suffix {
+
+				position: absolute;
+				line-height: 24px;
+				margin: 0px;
+
+				top: 96px;
+				left: 8px;
+
+			}
+
+			#setting_controls #inp_suffix {
+
+				position: absolute;
+
+				top: 96px;
+				left: 112px;
+				width: 256px;
+				height: 16px;
+
+			}
+
+
+
+		#format_controls {
+
+			position: fixed;
+			border: 3px solid;
+			background-color: #FFFFFF;
+
+			top: -13337px;
+			left: -13337px;
+			width: 384px;
+			height: 512px;
+
+		}
+
+			#format_controls #lbl_title {
+
+				position: absolute;
+				margin: 0px;
+				line-height: 20px;
+				font-family: "Geo";
+				font-weight: bold;
+
+				text-align: center;
+				background-color: #000000;
+				color: #ffffff;
+				width: 100%;
+				height: 20px;
+
+			}
+
+
+
+
+		#users_controls {
+
+			position: fixed;
+			border: 3px solid;
+			background-color: #FFFFFF;
+
+			top: -1337px;
+			right: -1337px;
+			width: 200px;
+			height: 256px;
+
+		}
+
+			#users_controls #lbl_title {
+
+				position: absolute;
+				margin: 0px;
+				line-height: 20px;
+				font-family: "Geo";
+				font-weight: bold;
+
+				text-align: center;
+				background-color: #000000;
+				color: #ffffff;
+				width: 100%;
+				height: 20px;
+
+			}
+
+
+	</style>
+
+	<script>
+
+		var messagehistory = "";
+		var socket;
+
+		window.onload = function() {
+			getsettings();
+			socket = new WebSocket(getText(""));
+			socket.onmessage = function(s) {
+				if (typeof(s.data) == "string") {
+					messagehandle(s.data);
+				} else {
+					var m = new FileReader();
+					m.addEventListener("loadend", function() { messagehandle(m.result); } );
+					m.readAsArrayBuffer(s.data);
+				}
+			};
+		}
+
+		function messagehandle (data) {
+
+			if (data[0] == "") {
+
+			}
+
+			else {
+				messagehistory += data;
+				historybox = document.getElementById("message_history");
+				isbottom = historybox.scrollTop + window.innerHeight - 44 >= historybox.scrollHeight;
+				historybox.innerHTML = messagehistory;
+				if (isbottom) { historybox.scrollTo(0, historybox.scrollHeight); }
+			}
+
+		}
+
+		function setCookie(name, value) {
+			var date = new Date();
+			date.setTime(date.getTime() + (10*24*60*60*1000));
+			document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
+		}
+
+		function getCookie(name) {
+			// stolen function
+			var nameEQ = name + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+			}
+			return null;
+		}
+
+		function getText(url){
+			// stolen function
+			var request = new XMLHttpRequest();
+			request.open('GET', 'url', true);
+			request.send(null);
+			request.onreadystatechange = function () {
+				if (request.readyState === 4 && request.status === 200) {
+					var type = request.getResponseHeader('Content-Type');
+					if (type.indexOf("text") !== 1) {
+						return request.responseText;
+					}
+				}
+			}
+		}
+
+		function savesettings() {
+
+			var username = document.getElementById("inp_username").value;
+
+			setCookie("username", username);
+
+		}
+
+		function getsettings() {
+
+			if (getCookie("username") !== null) { document.getElementById("inp_username").value = getCookie("username"); }
+
+			update_username();
+
+		}
+
+		var sel_window = -1;
+		var pos_dragoffsetx = null;
+		var pos_dragoffsety = null;
+
+		document.onmousemove = mousehandle;
+		document.onmousedown = mousehandle;
+
+		function mousehandle (event) {
+
+			var windows = [
+				document.getElementById("setting_controls"),
+				document.getElementById("format_controls"),
+				document.getElementById("users_controls")
+				];
+
+			if (event.which == 1) {
+
+				if ( sel_window > -1 ) {
+
+					windows[sel_window].style.left = (event.pageX + pos_dragoffsetx) + "px";
+					windows[sel_window].style.top = (event.pageY + pos_dragoffsety) + "px";
+
+				} else {
+
+					for (var i = 0; i < windows.length; i++) {
+
+						if (
+							(event.pageX > windows[i].offsetLeft) &&
+							(event.pageX < windows[i].offsetLeft + windows[i].clientWidth) &&
+							(event.pageY > windows[i].offsetTop) &&
+							(event.pageY < windows[i].offsetTop + 32) ) {
+							
+							sel_window = i;
+							pos_dragoffsetx = windows[i].offsetLeft - event.pageX;
+							pos_dragoffsety = windows[i].offsetTop - event.pageY;
+						
+						}
+
+				} }
+
+			} else {
+				sel_window = -1;
+				pos_dragoffsetx = null;
+				pos_dragoffsety = null;
+			}
+
+		}
+
+		var pos_settinglocx = 8;
+		var pos_settinglocy = 8;
+		var pos_formatlocx = 8;
+		var pos_formatlocy = 8;
+
+		function btnclick_setting() {
+
+			var wind = document.getElementById("setting_controls");
+
+			if (pos_settinglocx !== null && pos_settinglocy !== null) {
+				wind.style.left = pos_settinglocx + "px";
+				wind.style.top = pos_settinglocy + "px";
+				pos_settinglocx = null;
+				pos_settinglocy = null;
+			} else {
+				pos_settinglocx = wind.offsetLeft;
+				pos_settinglocy = wind.offsetTop;
+				wind.style.left = "-13337px";
+				wind.style.top = "-13337px";
+			}
+
+
+		}
+
+		function btnclick_format() {
+
+			var wind = document.getElementById("format_controls");
+
+			if (pos_formatlocx !== null && pos_formatlocy !== null) {
+				wind.style.left = (window.innerWidth - wind.offsetWidth - 8) + "px"; //pos_formatlocx + "px";
+				wind.style.top = (window.innerHeight - wind.offsetHeight - 48 - 8) + "px"; //pos_formatlocy + "px";
+				pos_formatlocx = null;
+				pos_formatlocy = null;
+			} else {
+				pos_formatlocx = wind.offsetLeft;
+				pos_formatlocy = wind.offsetTop;
+				wind.style.left = "-13337px";
+				wind.style.top = "-13337px";
+			}
+
+
+		}
+
+		function update_username() {
+
+			var src = document.getElementById("inp_username");
+			var des = document.getElementById("lbl_prefprev");
+
+			des.innerHTML = src.value;
+
+			savesettings();
+
+		}
+
+		function send_message() {
+
+			var e_message = document.getElementById("inp_message");
+			var e_username = document.getElementById("inp_username");
+			var e_prefix = document.getElementById("inp_prefix");
+			var e_suffix = document.getElementById("inp_suffix");
+
+			if (e_message.value !== "") {
+
+				var messages = document.getElementById("message_history").getElementsByTagName("div");
+
+				var s = "";
+				if ( typeof(messages[messages.length - 1]) !== "undefined" && messages[messages.length - 1].id == e_username.value ) { s += ""; }
+				else {
+					s += "</div><div class=\"message_div\" id=" + e_username.value + ">" +
+						"<p class=\"text_username\">" + e_username.value + "<\p>";
+				}
+
+				socket.send( s + e_prefix.value + e_message.value + e_suffix.value );
+
+			}
+
+			e_message.value = "";
+
+
+		}
+
+	</script>
+
+</head>
+<body>
+
+	<div id="message_history"></div>
+
+	<div id="message_controls">
+		<button id="btn_setting" onclick="btnclick_setting();">~</button>
+		<p id="lbl_prefprev"></p>
+		<form autocomplete="off" onsubmit="send_message(); return false;">
+			<input type="text" id="inp_message" placeholder="Message" autofocus>
+		</form>
+		<button id="btn_format" onclick="btnclick_format();">+</button>
+	</div>
+
+	<div id="setting_controls">
+		<p id="lbl_title">S e t t i n g s</p>
+
+		<br><p id="lbl_suffix">Message Sfx:</p>
+		<textarea id="inp_suffix"></textarea>
+
+		<br><p id="lbl_prefix">Message Pfx:</p>
+		<textarea id="inp_prefix"></textarea>
+
+		<br><p id="lbl_username">Username:</p>
+		<textarea id="inp_username" onChange="update_username();">Chef</textarea>
+	</div>
+
+	<div id="format_controls">
+		<p id="lbl_title">F o r m a t t i n g</p>
+		<p><br>Work In Progress...</p>
+	</div>
+
+	<div id="users_controls">
+		<p id="lbl_title">O n l i n e  U s e r s</p>
+		<p><br>Work In Progress...</p>
+	</div>
+
+
+</body>
+</html>
+
