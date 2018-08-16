@@ -9,9 +9,24 @@
 
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Geo" rel="stylesheet">
-	<embed src=>
 
 	<style>
+
+		.lbl_title {
+
+			position: absolute;
+			margin: 0px;
+			line-height: 20px;
+			font-family: "Geo";
+			font-weight: bold;
+
+			text-align: center;
+			background-color: #000000;
+			color: #ffffff;
+			width: 100%;
+			height: 20px;
+
+		}
 
 		#message_history {
 
@@ -146,22 +161,6 @@
 
 		}
 
-			#setting_controls #lbl_title {
-
-				position: absolute;
-				margin: 0px;
-				line-height: 20px;
-				font-family: "Geo";
-				font-weight: bold;
-
-				text-align: center;
-				background-color: #000000;
-				color: #ffffff;
-				width: 100%;
-				height: 20px;
-
-			}
-
 			#setting_controls #lbl_username {
 
 				position: absolute;
@@ -243,22 +242,6 @@
 
 		}
 
-			#format_controls #lbl_title {
-
-				position: absolute;
-				margin: 0px;
-				line-height: 20px;
-				font-family: "Geo";
-				font-weight: bold;
-
-				text-align: center;
-				background-color: #000000;
-				color: #ffffff;
-				width: 100%;
-				height: 20px;
-
-			}
-
 
 
 
@@ -275,21 +258,21 @@
 
 		}
 
-			#users_controls #lbl_title {
 
-				position: absolute;
-				margin: 0px;
-				line-height: 20px;
-				font-family: "Geo";
-				font-weight: bold;
 
-				text-align: center;
-				background-color: #000000;
-				color: #ffffff;
-				width: 100%;
-				height: 20px;
+		#init_controls {
 
-			}
+			position: fixed;
+			border: 3px solid;
+			background-color: #FFFFFF;
+			font-family: "Open Sans";
+
+			top: -1337px;
+			right: -1337px;
+			width: 512px;
+			height: 256px;
+
+		}
 
 
 	</style>
@@ -298,11 +281,87 @@
 
 	<script>
 
+		// general functions 
+
+			function setCookie(name, value) {
+				var date = new Date();
+				date.setTime(date.getTime() + (10*24*60*60*1000));
+				document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
+			}
+
+			function getCookie(name) {
+				// stolen function
+				var nameEQ = name + "=";
+				var ca = document.cookie.split(';');
+				for(var i=0;i < ca.length;i++) {
+					var c = ca[i];
+					while (c.charAt(0)==' ') c = c.substring(1,c.length);
+					if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+				}
+				return null;
+			}
+
+			function getText(url){
+				// stolen function
+				var request = new XMLHttpRequest();
+				request.open('GET', url, true);
+				request.send(null);
+				request.onreadystatechange = function () {
+					if (request.readyState === 4 && request.status === 200) {
+						var type = request.getResponseHeader('Content-Type');
+						if (type.indexOf("text") !== 1) {
+							return request.responseText;
+						}
+					}
+				}
+			}
+
+			function savesettings() {
+
+				var username = document.getElementById("inp_username").value;
+				var prefix = document.getElementById("inp_prefix").value;
+				var suffix = document.getElementById("inp_suffix").value;
+
+				setCookie("username", username);
+				setCookie("prefix", prefix);
+				setCookie("suffix", suffix);
+
+				if (username.trim() !== "") {
+					document.getElementById("init_controls").style.left = "-1337px";
+					document.getElementById("init_controls").style.top = "-1337px";
+				}
+
+			}
+
+			function getsettings() {
+
+				if (getCookie("username") !== null) { document.getElementById("inp_username").value = getCookie("username"); }
+				if (getCookie("prefix") !== null) { document.getElementById("inp_prefix").value = getCookie("prefix"); }
+				if (getCookie("suffix") !== null) { document.getElementById("inp_suffix").value = getCookie("suffix"); }
+
+				update_username();
+
+			}
+
 		var messagehistory = "";
 		var socket;
 
+		var pos_settinglocx = 8;
+		var pos_settinglocy = 8;
+		var pos_formatlocx = 8;
+		var pos_formatlocy = 8;
+
 		window.onload = function() {
 			getsettings();
+			if (getCookie("username") === null || getCookie("username").trim() == "") {
+				document.getElementById("init_controls").style.left = "400px";
+				document.getElementById("init_controls").style.top = "8px";
+				document.getElementById("setting_controls").style.left = "8px";
+				document.getElementById("setting_controls").style.top = "8px";
+				pos_settinglocx = null;
+				pos_settinglocy = null;
+
+			}
 			socket = new WebSocket(ip);
 			socket.onmessage = function(s) {
 				if (typeof(s.data) == "string") {
@@ -330,108 +389,6 @@
 			}
 
 		}
-
-		function setCookie(name, value) {
-			var date = new Date();
-			date.setTime(date.getTime() + (10*24*60*60*1000));
-			document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
-		}
-
-		function getCookie(name) {
-			// stolen function
-			var nameEQ = name + "=";
-			var ca = document.cookie.split(';');
-			for(var i=0;i < ca.length;i++) {
-				var c = ca[i];
-				while (c.charAt(0)==' ') c = c.substring(1,c.length);
-				if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-			}
-			return null;
-		}
-
-		function getText(url){
-			// stolen function
-			var request = new XMLHttpRequest();
-			request.open('GET', url, true);
-			request.send(null);
-			request.onreadystatechange = function () {
-				if (request.readyState === 4 && request.status === 200) {
-					var type = request.getResponseHeader('Content-Type');
-					if (type.indexOf("text") !== 1) {
-						return request.responseText;
-					}
-				}
-			}
-		}
-
-		function savesettings() {
-
-			var username = document.getElementById("inp_username").value;
-
-			setCookie("username", username);
-
-		}
-
-		function getsettings() {
-
-			if (getCookie("username") !== null) { document.getElementById("inp_username").value = getCookie("username"); }
-
-			update_username();
-
-		}
-
-		var sel_window = -1;
-		var pos_dragoffsetx = null;
-		var pos_dragoffsety = null;
-
-		document.onmousemove = mousehandle;
-		document.onmousedown = mousehandle;
-
-		function mousehandle (event) {
-
-			var windows = [
-				document.getElementById("setting_controls"),
-				document.getElementById("format_controls"),
-				document.getElementById("users_controls")
-				];
-
-			if (event.which == 1) {
-
-				if ( sel_window > -1 ) {
-
-					windows[sel_window].style.left = (event.pageX + pos_dragoffsetx) + "px";
-					windows[sel_window].style.top = (event.pageY + pos_dragoffsety) + "px";
-
-				} else {
-
-					for (var i = 0; i < windows.length; i++) {
-
-						if (
-							(event.pageX > windows[i].offsetLeft) &&
-							(event.pageX < windows[i].offsetLeft + windows[i].clientWidth) &&
-							(event.pageY > windows[i].offsetTop) &&
-							(event.pageY < windows[i].offsetTop + 32) ) {
-							
-							sel_window = i;
-							pos_dragoffsetx = windows[i].offsetLeft - event.pageX;
-							pos_dragoffsety = windows[i].offsetTop - event.pageY;
-						
-						}
-
-				} }
-
-			} else {
-				sel_window = -1;
-				pos_dragoffsetx = null;
-				pos_dragoffsety = null;
-			}
-
-		}
-
-		var pos_settinglocx = 8;
-		var pos_settinglocy = 8;
-		var pos_formatlocx = 8;
-		var pos_formatlocy = 8;
 
 		function btnclick_setting() {
 
@@ -471,12 +428,62 @@
 
 		}
 
+		var sel_window = -1;
+		var pos_dragoffsetx = null;
+		var pos_dragoffsety = null;
+
+		document.onmousemove = mousehandle;
+		document.onmousedown = mousehandle;
+
+		function mousehandle (event) {
+
+			var windows = [
+				document.getElementById("setting_controls"),
+				document.getElementById("format_controls"),
+				document.getElementById("users_controls"),
+				document.getElementById("init_controls"),
+				];
+
+			if (event.which == 1) {
+
+				if ( sel_window > -1 ) {
+
+					windows[sel_window].style.left = (event.pageX + pos_dragoffsetx) + "px";
+					windows[sel_window].style.top = (event.pageY + pos_dragoffsety) + "px";
+
+				} else {
+
+					for (var i = 0; i < windows.length; i++) {
+
+						if (
+							(event.pageX > windows[i].offsetLeft) &&
+							(event.pageX < windows[i].offsetLeft + windows[i].clientWidth) &&
+							(event.pageY > windows[i].offsetTop) &&
+							(event.pageY < windows[i].offsetTop + 32) ) {
+							
+							sel_window = i;
+							pos_dragoffsetx = windows[i].offsetLeft - event.pageX;
+							pos_dragoffsety = windows[i].offsetTop - event.pageY;
+						
+						}
+
+				} }
+
+			} else {
+				sel_window = -1;
+				pos_dragoffsetx = null;
+				pos_dragoffsety = null;
+			}
+
+		}
+
 		function update_username() {
 
 			var src = document.getElementById("inp_username");
 			var des = document.getElementById("lbl_prefprev");
 
-			des.innerHTML = src.value;
+			if (src.value.trim() == "") { src.value = des.innerHTML; }
+			else { des.innerHTML = src.value; }
 
 			savesettings();
 
@@ -489,14 +496,14 @@
 			var e_prefix = document.getElementById("inp_prefix");
 			var e_suffix = document.getElementById("inp_suffix");
 
-			if (e_message.value !== "") {
+			if (e_message.value !== "" && e_username.value.trim() !== "") {
 
 				var messages = document.getElementById("message_history").getElementsByTagName("div");
 
 				var s = "";
 				if ( typeof(messages[messages.length - 1]) !== "undefined" && messages[messages.length - 1].id == e_username.value ) { s += ""; }
 				else {
-					s += "</div><div class=\"message_div\" id=" + e_username.value + ">" +
+					s += "</div><div class=\"message_div\" id=\"" + e_username.value + "\">" +
 						"<p class=\"text_username\">" + e_username.value + "<\p>";
 				}
 
@@ -526,7 +533,7 @@
 	</div>
 
 	<div id="setting_controls">
-		<p id="lbl_title">S e t t i n g s</p>
+		<p class="lbl_title">S e t t i n g s</p>
 
 		<br><p id="lbl_suffix">Message Sfx:</p>
 		<textarea id="inp_suffix"></textarea>
@@ -535,17 +542,29 @@
 		<textarea id="inp_prefix"></textarea>
 
 		<br><p id="lbl_username">Username:</p>
-		<textarea id="inp_username" onChange="update_username();">Chef</textarea>
+		<textarea id="inp_username" onChange="update_username();"></textarea>
 	</div>
 
 	<div id="format_controls">
-		<p id="lbl_title">F o r m a t t i n g</p>
+		<p class="lbl_title">F o r m a t t i n g</p>
 		<p><br>Work In Progress...</p>
 	</div>
 
 	<div id="users_controls">
-		<p id="lbl_title">O n l i n e  U s e r s</p>
+		<p class="lbl_title">O n l i n e  U s e r s</p>
 		<p><br>Work In Progress...</p>
+	</div>
+
+	<div id="init_controls">
+		<p class="lbl_title">W e l c o m e</p>
+		<p><br>
+			Welcome to PastryChat.<br>
+			Please enter a username in the settings window to send messages.<br>
+			You can change it at any time.<br>
+			Also note that what you enter in will use raw html formatting so go nuts.<br>
+			Close the settings window with the button in the bottom left corner<br>
+			This window will close automatically.<br>
+		</p> 
 	</div>
 
 
